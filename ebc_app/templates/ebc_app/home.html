@@ -1,0 +1,94 @@
+{% extends "ebc_app/base.html" %}
+
+{% block sty %}
+{% endblock %}
+
+{% block tit %}
+HOME!
+{% endblock %}
+
+{% block bod %}
+<div class="Header">
+	<div style="float:left;">
+		<h4><a href="{% url 'homeViewName' %}">HOME</a></h4>
+	</div>
+	<div style="float: right;">
+		<form action="{% url 'searchomeViewName' %}" method="get">
+			{% csrf_token %}
+			<div>
+				<input type="text" name="search_txt" value="" placeholder="Search">
+				<input type="submit" name="search_but" value="Search">
+			</div>
+			<div>
+				<input type="radio" name="search_criteria" value="by_title" checked="true">Title
+				<input type="radio" name="search_criteria" value="by_speaker">Speaker
+				<input type="radio" name="search_criteria" value="by_series">Series
+			</div>
+		</form>
+	</div>
+	<div style="">
+		<h1 style="background: white; color: white;">uploads</h1>
+		{% if search_text %}
+			<h6>Searching for {{ search_text }}</h6>
+		{% endif %}
+	</div>
+</div>
+<div class="Content">
+	{% if files %} 
+		<div>
+			<table id = "tabler">
+				<caption >Messages Uploaded</caption>
+				<tr style="font-size: x-large;">
+					<th class="white_background">Title</th>
+					<th class="">Speaker</th>
+					<th class="white_background">Series</th>
+					<th class="">Date Uploaded</th>
+				</tr>
+				{% for file in files %}
+					<tr>
+						<td class="white_background"> <a href="{{ file.file_link }}">{{ file.file_title }}</td>
+						<td class="">{% if file.speaker %} {{ file.speaker }} {% endif %}</td>
+						<td class="white_background">{% if file.series %} {{ file.series }} {% endif %}</td>
+						<td class="">{{ file.date_of_file_upload }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+		</div>
+	{% else %} No Contents
+	{% endif %}
+</div>
+<div class="Footer">
+	EBC Yola, 080808080
+	<div>
+		{% if search_text %}
+			{% if current_page == 1 %}
+				{% if total_pages == 1 %}
+					Previous <== | ==> Next
+				{% else %}
+					Previous <== | <a href="{% url 'searchPageViewName' search_text next_page %}"> ==> Next</a>
+	 			{% endif %}
+			{% else %}
+				{% if total_pages == next_page %}
+					<a href="{% url 'searchPageViewName' search_text  previous_page %}"> Previous <== </a>| ==> Next</a>
+				{% else %}
+					<a href="{% url 'searchPageViewName' search_text  previous_page %}"> Previous <== </a>|<a href="{% url 'searchPageViewName' search_text next_page %}"> ==> Next</a>
+				{% endif %}
+			{% endif %}
+		{% else %}
+			{% if current_page == 1 %}
+				{% if total_pages == 1 %}
+					Previous <== | ==> Next
+				{% else %}
+					Previous <== | <a href="{{ next_page }}"> ==> Next</a>
+	 			{% endif %}
+			{% else %}
+				{% if total_pages == next_page %}
+					<a href="{{ previous_page }}"> Previous <== </a>| ==> Next</a>
+				{% else %}
+					<a href="{{ previous_page }}"> Previous <== </a>|<a href="{{ next_page }}"> ==> Next</a>
+				{% endif %}
+			{% endif %}
+		{% endif %}
+	</div>
+</div>
+{% endblock %}
